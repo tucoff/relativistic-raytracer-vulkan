@@ -206,9 +206,9 @@ public:
     };
 
     void update(float deltaTime, Game* game);
+    void applyConfig(Game* game);
 
 private:
-    void applyConfig(Game* game);
     void advance(Game* game);
     void advanceBaseline(Game* game);
     void saveBenchmark(float fps, Game* game);
@@ -2229,7 +2229,18 @@ private:
     {
         BenchmarkAutomator automator;
 
-        setResolution(0);
+        setResolution(0); 
+
+        /*automator.spinIndex = 3;
+        automator.gravIndex = 0;
+        automator.stepIndex = 0;
+        automator.camIndex = 1;
+        automator.sceneIndex = 5;
+        automator.integratorIndex = 1;
+        automator.metricIndex = 2;
+        automator.resIndex = 2;
+
+        automator.applyConfig(this);*/
 
         while (!glfwWindowShouldClose(window))
         {  
@@ -2239,7 +2250,7 @@ private:
 
             glfwPollEvents();
 
-            //automator.update(deltaTime, this);
+            automator.update(deltaTime, this); 
 
             processInput();
             updateFPS();
@@ -2999,11 +3010,18 @@ inline void BenchmarkAutomator::saveBenchmark(float fps, Game* game) {
     std::string integratorName = (integratorIndex == 0) ? "Euler" : "RK4";
 
     char filename[512];
-    // Formatted exactly like Unity: {avgFps}FPS_{metric}_{integrator}_S{sceneId}_{camera}_{step}_{grav}_{spin}_{h}p.png
-    sprintf(filename, "Benchmarks/%.1fFPS_%s_%s_S%d_%s_%s_%s_%s_%dp.png",
-        fps, metricName.c_str(), integratorName.c_str(), sceneIndex,
-        camPreset.name.c_str(), step.name.c_str(), grav.name.c_str(), spin.name.c_str(),
-        RESOLUTION_PRESETS[resIndex].height);
+
+    // Old Format: {avgFps}FPS_{metric}_{integrator}_S{sceneId}_{camera}_{step}_{grav}_{spin}_{h}p.png
+    //sprintf(filename, "Benchmarks/%.1fFPS_%s_%s_S%d_%s_%s_%s_%s_%dp.png",
+    //    fps, metricName.c_str(), integratorName.c_str(), sceneIndex,
+    //    camPreset.name.c_str(), step.name.c_str(), grav.name.c_str(), spin.name.c_str(),
+    //    RESOLUTION_PRESETS[resIndex].height);
+
+    // New Better Format: _S{sceneId}_{camera}_{metric}_{grav}_{integrator}_{step}_{spin}_{h}p_{avgFps}FPS.png
+    sprintf(filename, "Benchmarks/_S%d_%s_%s_%s_%s_%s_%s_%dp_%.1fFPS.png",
+        sceneIndex, camPreset.name.c_str(), metricName.c_str(), grav.name.c_str(), 
+        integratorName.c_str(), step.name.c_str(), spin.name.c_str(),
+        RESOLUTION_PRESETS[resIndex].height, fps);
 
     game->saveScreenshot(filename);
     saveToCSV(fps, filename);
