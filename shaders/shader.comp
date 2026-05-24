@@ -281,20 +281,22 @@ vec3 get_gravity_accel(vec3 pos, vec3 v, SceneConfig scene) {
     float dist3 = dist2 * dist;
     float dist5 = dist3 * dist2;
 
+    float sphereRadiusAdjusted = scene.sphereRadius * cam.gravity_multiplier;
+
     if (cam.metric == 0) {
-        accel = toSphere * (scene.sphereRadius * 0.5) / dist3;
+        accel = toSphere * (sphereRadiusAdjusted * 0.5) / dist3;
     } else if (cam.metric == 1) {
         vec3 h = cross(-toSphere, v);
-        accel = toSphere * (1.5 * scene.sphereRadius * dot(h, h)) / dist5;
+        accel = toSphere * (1.5 * sphereRadiusAdjusted * dot(h, h)) / dist5;
     } else {
         vec3 r_vec = -toSphere; 
         vec3 h = cross(r_vec, v);
-        vec3 a_schwarzschild = -r_vec * (1.5 * scene.sphereRadius * dot(h, h)) / dist5;
-        vec3 spin_vec = KERR_SPIN_AXIS * scene.sphereRadius * cam.spin_speed;
+        vec3 a_schwarzschild = -r_vec * (1.5 * sphereRadiusAdjusted * dot(h, h)) / dist5;
+        vec3 spin_vec = KERR_SPIN_AXIS * sphereRadiusAdjusted * cam.spin_speed;
         vec3 H = (2.0 / dist5) * (3.0 * r_vec * dot(spin_vec, r_vec) - spin_vec * dist2);
         vec3 a_frame_drag = -cross(v, H);
         accel = a_schwarzschild + a_frame_drag;
-    }
+    } 
      
     if (scene.sphere2Radius > 0.0) {
         vec3 toSphere2 = scene.sphere2Pos - pos;
@@ -303,16 +305,19 @@ vec3 get_gravity_accel(vec3 pos, vec3 v, SceneConfig scene) {
             float d2_2 = dist2_2 * dist2_2;
             float d2_3 = d2_2 * dist2_2;
             float d2_5 = d2_3 * d2_2;
+
+            float sphere2RadiusAdjusted = scene.sphere2Radius * cam.gravity_multiplier;
+
             if (cam.metric == 0) {
-                accel += toSphere2 * (scene.sphere2Radius * 0.5) / d2_3;
+                accel += toSphere2 * (sphere2RadiusAdjusted * 0.5) / d2_3;
             } else if (cam.metric == 1) {
                 vec3 h2 = cross(-toSphere2, v);
-                accel += toSphere2 * (1.5 * scene.sphere2Radius * dot(h2, h2)) / d2_5;
+                accel += toSphere2 * (1.5 * sphere2RadiusAdjusted * dot(h2, h2)) / d2_5;
             } else {
                 vec3 r_vec2 = -toSphere2;
                 vec3 h2 = cross(r_vec2, v);
-                vec3 a_schwarzschild2 = -r_vec2 * (1.5 * scene.sphere2Radius * dot(h2, h2)) / d2_5;
-                vec3 spin_vec2 = KERR_SPIN_AXIS * scene.sphere2Radius * cam.spin_speed;
+                vec3 a_schwarzschild2 = -r_vec2 * (1.5 * sphere2RadiusAdjusted * dot(h2, h2)) / d2_5;
+                vec3 spin_vec2 = KERR_SPIN_AXIS * sphere2RadiusAdjusted * cam.spin_speed;
                 vec3 H2 = (2.0 / d2_5) * (3.0 * r_vec2 * dot(spin_vec2, r_vec2) - spin_vec2 * d2_2);
                 vec3 a_frame_drag2 = -cross(v, H2);
                 accel += a_schwarzschild2 + a_frame_drag2;

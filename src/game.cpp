@@ -176,7 +176,7 @@ public:
         {"SmallStep", 1.0f}, {"MediumStep", 52.0f}, {"BigStep", 260.0f}
     };
     std::vector<GravityPreset> gravityPresets = {
-        {"NormalG", 1.989e31f}, {"StrongG", 3.978e31f}, {"MuchStrongerG", 5.967e31f}
+        {"NormalG", 1.989e31f}, {"StrongG", 7.989e31f}, {"MuchStrongerG", 1.989e32f}
     };
     std::vector<GravityPreset> customScene6Gravities = {
         {"Grav_1.989e31", 1.989e+31f}, {"Grav_1.989e32", 1.989e+32f},
@@ -2203,7 +2203,9 @@ private:
         // Ignore the next mouse movement callback to prevent camera jitter
         ignoreNextMouseMove = true;
 
-        framebufferResized = true;
+        framebufferResized = true; 
+
+        centerWindow();
     }
 
     void updateFPS()
@@ -2231,16 +2233,16 @@ private:
 
         setResolution(0); 
 
-        /*automator.spinIndex = 3;
-        automator.gravIndex = 0;
-        automator.stepIndex = 0;
-        automator.camIndex = 1;
-        automator.sceneIndex = 5;
-        automator.integratorIndex = 1;
+        automator.spinIndex = 1;
+        automator.gravIndex = 1;
+        automator.stepIndex = 1;
+        automator.camIndex = 5;
+        automator.sceneIndex = 3;
+        automator.integratorIndex = 0;
         automator.metricIndex = 2;
         automator.resIndex = 2;
 
-        automator.applyConfig(this);*/
+        automator.applyConfig(this);
 
         while (!glfwWindowShouldClose(window))
         {  
@@ -2250,12 +2252,10 @@ private:
 
             glfwPollEvents();
 
-            automator.update(deltaTime, this); 
+            //automator.update(deltaTime, this); 
 
             processInput();
-            updateFPS();
-
-            centerWindow();
+            updateFPS(); 
 
             drawFrame();
         }
@@ -3017,10 +3017,10 @@ inline void BenchmarkAutomator::saveBenchmark(float fps, Game* game) {
     //    camPreset.name.c_str(), step.name.c_str(), grav.name.c_str(), spin.name.c_str(),
     //    RESOLUTION_PRESETS[resIndex].height);
 
-    // New Better Format: _S{sceneId}_{camera}_{metric}_{grav}_{integrator}_{step}_{spin}_{h}p_{avgFps}FPS.png
+    // New Better Format: _S{sceneId}_{camera}_{metric}_{grav}_{step}_{spin}_{integrator}_{h}p_{avgFps}FPS.png
     sprintf(filename, "Benchmarks/_S%d_%s_%s_%s_%s_%s_%s_%dp_%.1fFPS.png",
         sceneIndex, camPreset.name.c_str(), metricName.c_str(), grav.name.c_str(), 
-        integratorName.c_str(), step.name.c_str(), spin.name.c_str(),
+        step.name.c_str(), spin.name.c_str(), integratorName.c_str(),
         RESOLUTION_PRESETS[resIndex].height, fps);
 
     game->saveScreenshot(filename);
